@@ -1,0 +1,22 @@
+df <- read.delim('household_power_consumption.txt',na.strings=c("?"),sep=";");
+p <- as.Date(df$Date,"%d/%m/%Y");
+df["Revised_Date"] <- p;
+remove(p);
+useful_data <- df[df$Revised_Date=="2007-02-01"|df$Revised_Date=="2007-02-02",];
+p <- paste(useful_data$Revised_Date,useful_data$Time,sep=" ");
+p <- strptime(p,"%Y-%m-%d %H:%M:%S");
+weekday_id <- as.POSIXct(p);
+useful_data["Weekday"] <- weekday_id;
+remove(p);
+remove(weekday_id);
+#Create the plot
+png("plot4.png",width=480,height=480,units="px");
+par(mfrow=c(2,2));
+plot(useful_data$Weekday,useful_data$Global_active_power,type="s",xlab="",ylab="Global Active Power",main="");
+plot(useful_data$Weekday,useful_data$Voltage,type="s",xlab="datetime",ylab="Voltage",main="");
+plot(useful_data$Weekday,useful_data$Sub_metering_1,type="s",xlab="",ylab="Energy sub metering",main="");
+points(useful_data$Weekday,useful_data$Sub_metering_2,type="s",col="red");
+points(useful_data$Weekday,useful_data$Sub_metering_3,type="s",col="blue");
+legend('topright',c('Sub_metering_1','Sub_metering_2','Sub_metering_3'),lty=c(1,1,1),bty="n",col=c("black","red","blue"));
+plot(useful_data$Weekday,useful_data$Global_reactive_power,type="s",xlab="datetime",ylab="Global_reactive_power",main="");
+dev.off();
